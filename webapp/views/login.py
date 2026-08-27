@@ -5,6 +5,7 @@ sys.path.append(str(Path(__file__).resolve().parent.parent))
 import streamlit as st
 import bcrypt
 from connectpg import get_connection
+from session_store import create_session
 
 st.title("🔐 เข้าสู่ระบบ")
 
@@ -34,8 +35,10 @@ with st.form("login_form"):
         else:
             full_name = verify_user(username, password)
             if full_name:
+                token = create_session(full_name)
                 st.session_state.authenticated = True
                 st.session_state.user_name = full_name
+                st.query_params["token"] = token
                 st.success("เข้าสู่ระบบสำเร็จ!")
                 st.rerun()
             else:
